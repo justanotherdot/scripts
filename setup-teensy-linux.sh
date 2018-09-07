@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eux
+set -eu
 
 # This bootstraps the udev rules for the teensy GUI on Linux.
 # It is primarily adapted from this answer:
@@ -25,13 +25,19 @@ tar -xvzf teensy_linux64.tar.gz
 echo "Succesfully installed Teensy into $HOME/.teensy"
 
 shell_name=$(ps -p "$$" -o comm -h)
+example_cmd="\"PATH=\"\$PATH:\$HOME/.teensy\"\" >> \"\$HOME/.\${SHELL}rc\""
 case $shell_name in
   "bash" | "zsh")
     echo "Looks like you're using $shell_name."
+    echo "I'll add this to the path in your runtime config."
     echo "PATH=\"\$PATH:\$HOME/.teensy\"" >> "$HOME/.${shell_name}rc"
+
+    echo "If this isn't right, simply run the following line in your shell"
+    echo "$example_cmd"
     ;;
   *)
-    echo "Please add this directory to your PATH."
+    echo "Please add this directory to your PATH to finalise the setup."
+    echo "$example_cmd"
     ;;
 esac
 
