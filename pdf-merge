@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+usage() {
+  echo "pdf-merge v0.1.0"
+  echo "pdf-merge INPUT_FILES OUTPUT_FILE"
+}
+
+if [ $# -lt 3 ]; then
+  usage
+  exit 1
+fi
+
+# Get argv into the shape of an array.
+declare -a args
+i=0
+for arg in "$@"; do
+  args[i]=$arg
+  i=$(( i + 1 ))
+done
+
+output_name="${args[-1]}"
+declare -a input_files
+input_files=( "${args[@]:0:$i-1}" )
+
+gs \
+  -q \
+  -sPAPERSIZE=letter \
+  -dNOPAUSE \
+  -dBATCH \
+  -sDEVICE=pdfwrite \
+  -sOutputFile="${output_name}" \
+  "${input_files[@]}"
